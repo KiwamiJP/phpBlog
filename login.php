@@ -1,6 +1,6 @@
 <?php 
 session_start();
-require '../config/config.php';
+require 'config/config.php';
 if($_POST){
     $email =$_POST['email'];
     $password = $_POST['password'];
@@ -10,7 +10,7 @@ if($_POST){
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if($user){
-        if($user['password'] === $password && $user['role'] === 1 ){
+        if($user['password'] === $password){
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['logged_in'] = time();
@@ -18,15 +18,9 @@ if($_POST){
             header('Location: index.php');
 
 
-        }else if ($user['password'] === $password && $user['role'] === 0 ){
-          $_SESSION['user_id'] = $user['id'];
-          $_SESSION['username'] = $user['username'];
-          $_SESSION['logged_in'] = time();
-
-          header('Location: /Blog/index.php');
+        }
     }
     echo "<script>alert('Incorrect Credentials')</script>";
-}
 }
 ?>  
 <!DOCTYPE html>
@@ -39,13 +33,13 @@ if($_POST){
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
@@ -79,8 +73,9 @@ if($_POST){
         <div class="row">
           
           <!-- /.col -->
-          <div class="col-4">
+          <div class="container">
             <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <a href="register.php" class="btn btn-primary btn-block">Register</a>
           </div>
           <!-- /.col -->
         </div>
@@ -97,11 +92,11 @@ if($_POST){
 <!-- /.login-box -->
 
 <!-- jQuery -->
-<script src="../plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../dist/js/adminlte.min.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
 
 </body>
 </html>

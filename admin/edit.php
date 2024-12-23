@@ -66,7 +66,7 @@ $result = $stmt->fetchAll();
                             </div>
                             <div class="form-group">
                                 <input type="submit" value="SUBMIT" class="btn btn-success">
-                                <a href="index.html" class="btn btn-warning">Back</a>
+                                <a href="/Blog/admin" class="btn btn-warning">Back</a>
                             </div>
                         </form>
                      </div>

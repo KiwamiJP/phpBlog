@@ -1,33 +1,36 @@
 <?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
-require '../config/config.php';
+require 'config/config.php';
 if($_POST){
-    $email =$_POST['email'];
+
+    $email = $_POST['email'];
+    $name = $_POST['name'];
     $password = $_POST['password'];
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email");
     $stmt->bindValue(':email',$email);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if($user){
-        if($user['password'] === $password && $user['role'] === 1 ){
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['logged_in'] = time();
+        echo "<script>alert('Email duplicated!!')</script>";
 
-            header('Location: index.php');
-
-
-        }else if ($user['password'] === $password && $user['role'] === 0 ){
-          $_SESSION['user_id'] = $user['id'];
-          $_SESSION['username'] = $user['username'];
-          $_SESSION['logged_in'] = time();
-
-          header('Location: /Blog/index.php');
+    }else{
+        $name= $_POST['name'];   
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+       $stmt =  $pdo->prepare("INSERT INTO users(username,email,password,role,created_at)VALUES (:name,:email,:password,:role,:created_at)");
+       $result = $stmt->execute(
+        array(':name'=>$name,':email'=>$email,':password'=>$password,':role'=>0,':created_at' => date('Y-m-d H:i:s') )
+       );
+        if($result){
+            echo "<script>alert('Successfully registered');window.location.href='login.php'</script>";
+        }
     }
-    echo "<script>alert('Incorrect Credentials')</script>";
-}
-}
+    }
+    
+    
 ?>  
 <!DOCTYPE html>
 <html>
@@ -39,13 +42,13 @@ if($_POST){
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
@@ -57,9 +60,17 @@ if($_POST){
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg">Register new account</p>
 
-      <form action="login.php" method="post">
+      <form action="register.php" method="post">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="name" placeholder="Name">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
         <div class="input-group mb-3">
           <input type="email" class="form-control" name="email" placeholder="Email">
           <div class="input-group-append">
@@ -79,8 +90,9 @@ if($_POST){
         <div class="row">
           
           <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          <div class="container">
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <a href="login.php" class="btn btn-primary btn-block">Go Login</a>
           </div>
           <!-- /.col -->
         </div>
@@ -97,11 +109,11 @@ if($_POST){
 <!-- /.login-box -->
 
 <!-- jQuery -->
-<script src="../plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../dist/js/adminlte.min.js"></script>
+<script src="dist/js/adminlte.min.js"></script>
 
 </body>
 </html>

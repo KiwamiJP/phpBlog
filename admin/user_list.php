@@ -18,7 +18,7 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])){
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Blog Table</h3>
+                <h3 class="card-title">User Table</h3>
               </div>
               <?php 
               if(!empty($_GET['pageno'])){
@@ -30,21 +30,21 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])){
               $numOfrecs = 5;
               $offset =  ($pageno-1)*$numOfrecs;
                 if(empty($_POST['search'])){
-                  $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                  $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                 $stmt->execute();
                 $rawResult=$stmt->fetchAll();
                 $total_pages = ceil(count($rawResult)/$numOfrecs);
-                $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC LIMIT $offset,$numOfrecs");
                 $stmt->execute();
                 $result = $stmt->fetchAll();
 
                 }else{
                   $searchKey = $_POST['search'];
-                  $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+                  $stmt = $pdo->prepare("SELECT * FROM users WHERE username LIKE '%$searchKey%' ORDER BY id DESC");
                 $stmt->execute();
                 $rawResult=$stmt->fetchAll();
                 $total_pages = ceil(count($rawResult)/$numOfrecs);
-                $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                $stmt = $pdo->prepare("SELECT * FROM users WHERE username LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                 }
@@ -52,15 +52,16 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])){
               <!-- /.card-header -->
               <div class="card-body">
                   <div>
-                    <a href="add.php" type="button" class="btn btn-success">New Blog Post</a>
+                    <a href="add_user.php" type="button" class="btn btn-success">Add New User</a>
                   </div>
                   <br>
                 <table class="table table-bordered">
                   <thead>                  
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Title</th>
-                      <th>Content</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Role</th>
                       <th style="width: 40px">Actions</th>
                     </tr>
                   </thead>
@@ -73,19 +74,22 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])){
                            <tr>
                       <td><?php echo $i ?></td>
                       <td>
-                        <?php echo $value['title'] ?>
+                        <?php echo $value['username'] ?>
                       </td> 
                       <td>
-                        <?php echo substr($value['content'],0,50)?>
+                        <?php echo $value['email']?>
+                      </td>
+                      <td>
+                        <?php echo $value['role'] ?>
                       </td>
                       <td>
                        <div class="btn-group">
                         <div class="container">
-                          <a href="edit.php?id=<?php echo $value['id']?>" type="button" class="btn btn-warning">Edit</a>
+                          <a href="edit_user.php?id=<?php echo $value['id']?>" type="button" class="btn btn-warning">Edit</a>
 
                         </div>
                         <div class="container">
-                          <a href="delete.php?id=<?php echo $value['id']?>" type="button" class="btn btn-danger">Delete</a>
+                          <a href="delete_user.php?id=<?php echo $value['id']?>" type="button" class="btn btn-danger">Delete</a>
 
                         </div>
                        </div>

@@ -28,6 +28,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
+     
+      
       
      
     </ul>
@@ -103,6 +105,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Blog
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="user_list.php" class="nav-link">
+              <i class="nav-icon fas fa-user"></i>
+              <p>
+                User
               </p>
             </a>
           </li>

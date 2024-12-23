@@ -1,4 +1,9 @@
 <?php
+require 'config/config.php';
+session_start();
+if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])){
+  header("Location:login.php");
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,118 +22,112 @@
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini" >
+  <div class="content">
+  <?php 
+$stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+$stmt->execute();
+$result=$stmt->fetchAll();
+?>
+<?php 
+              if(!empty($_GET['pageno'])){
+                $pageno = $_GET['pageno'];
 
-   <div class="row">
+              }else{
+                $pageno = 1;
+              }
+              $numOfrecs = 6;
+              $offset =  ($pageno-1)*$numOfrecs;
+                if(empty($_POST['search'])){
+                  $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                $stmt->execute();
+                $rawResult=$stmt->fetchAll();
+                $total_pages = ceil(count($rawResult)/$numOfrecs);
+                $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+
+                }else{
+                  $searchKey = $_POST['search'];
+                  $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+                $stmt->execute();
+                $rawResult=$stmt->fetchAll();
+                $total_pages = ceil(count($rawResult)/$numOfrecs);
+                $stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                }
+              ?> 
+                <h1 style="text-align:center">Blog App</h1>
+
+
+   <div class="row">  
+
+   <?php 
+                      if($result){
+                        $i = 1;
+                        foreach($result as $value){
+                    ?>
+    <div class="col-md-4">
+    
+    <!-- Box Comment -->
+    <div class="card card-widget">
+      <div class="card-header">
+       <div class="card-title" style="float:none;position:absolute;top: 18%;left: 40%;">
+       <h4><?php echo $value['title']?></h4>
+       </div>
+        <!-- /.user-block -->
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Mark as read">
+            <i class="far fa-circle"></i></button>
+          <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+          </button>
+        </div>
+        <!-- /.card-tools -->
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <a href="blogdetails.php?id=<?php echo $value['id'];?>"><img class="img-fluid pad" src="admin/images/<?php echo $value['image'] ?>"></a>
+
+        
+      </div>
+      <!-- /.card-body -->
+     
+      <!-- /.card-footer -->
+     
+      <!-- /.card-footer -->
+    </div>
+    <!-- /.card -->
+ 
+
+
+</div>
+                          <?php
+                          $i++;
+                        }
+                      }
+                   ?>
+
+                   
   
-   
-          
-   <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-               <div class="card-title" style="float:none;position:absolute;top: 18%;left: 40%;">
-               <h4>Blog Title</h4>
-               </div>
-                <!-- /.user-block -->
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Mark as read">
-                    <i class="far fa-circle"></i></button>
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-                  </button>
-                </div>
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
+  </div> 
+ <div class="row" style="float:right;margin-right:0px">
+ <nav aria-label="Page navigation example" style="float:right">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
+    <li class="page-item <?php if($pageno <= 1){echo 'disabled';} ?>">
+      <a class="page-link" href="<?php if($pageno <= 1){echo '#';}else{echo '?pageno='.($pageno-1);}?>">Previous</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="#"><?php echo $pageno;?></a></li>
+    <li class="page-item <?php if($pageno >= $total_pages){echo 'disabled';}?>"><a class="page-link" href="<?php if($pageno >= $total_pages){echo '#';}else{echo '?pageno='.($pageno+1);}?>">Next</a></li>
+    <li class="page-item "><a class="page-link" href="?pageno=  <?php echo $total_pages?>">Last</a></li>
+  </ul>
+</nav>
+ </div>
 
-                
-              </div>
-              <!-- /.card-body -->
-             
-              <!-- /.card-footer -->
-             
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
-    </div>  
-    <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-               <div class="card-title" style="float:none;position:absolute;top: 18%;left: 40%;">
-               <h4>Blog Title</h4>
-               </div>
-                <!-- /.user-block -->
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Mark as read">
-                    <i class="far fa-circle"></i></button>
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-                  </button>
-                </div>
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
+  </div><br><br>
 
-                
-              </div>
-              <!-- /.card-body -->
-             
-              <!-- /.card-footer -->
-             
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
-    </div>  
-    <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-               <div class="card-title" style="float:none;position:absolute;top: 18%;left: 40%;">
-               <h4>Blog Title</h4>
-               </div>
-                <!-- /.user-block -->
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Mark as read">
-                    <i class="far fa-circle"></i></button>
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-                  </button>
-                </div>
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
+  <?php include('./admin/footer.php')?>
 
-                
-              </div>
-              <!-- /.card-body -->
-             
-              <!-- /.card-footer -->
-             
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
-    </div>  
-   </div>
-
-
-<!-- jQuery -->
-<script src="../plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
-</body>
-</html>
